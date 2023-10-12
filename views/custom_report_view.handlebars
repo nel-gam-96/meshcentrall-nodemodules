@@ -1,27 +1,124 @@
-<div id="c_view_reports" style="display: none;" data-view="custom" data-mode="reports">
-    <div id="c_view_reports_title">
-        <h1>Reportes</h1>
+<div id="c_view_reports" data-view="custom" data-mode="reports" style="height: 100%;">
+        <div id="c_view_reports_title">
+            <h1>Reportes</h1>
+        </div>
+        <div id="c_view_reports_layout" style="height: 100%;">
+            <aside id="c_layout_aside">
+                <div class="layout_items">
+                    <div class="input_cheack_group">
+                        <input type="checkbox" name="" id="all_groups">
+                        <label for="all_groups">TODOS</label>
+                    </div>
+                    <div class="input_cheack_group">
+                        <input type="checkbox" name="" id="grupo1">
+                        <label for="grupo1">Grupo 1</label>
+                    </div>
+                    <div class="input_cheack_group">
+                        <input type="checkbox" name="" id="grupo2">
+                        <label for="grupo2">Grupo 2</label>
+                    </div>
+                    <div class="input_cheack_group">
+                        <input type="checkbox" name="" id="grupo3">
+                        <label for="grupo3">Grupo 3</label>
+                    </div>
+                    <div class="input_cheack_group">
+                        <input type="checkbox" name="" id="grupo4">
+                        <label for="grupo4">Grupo 4</label>
+                    </div>
+                    <div class="input_cheack_group">
+                        <input type="checkbox" name="" id="grupo5">
+                        <label for="grupo5">Grupo 5</label>
+                    </div>
+                </div>
+            </aside>
+            <div id="c_layout_filters">
+                <div class="input_group">
+                    <label for="c_layout_select">EPAD</label>
+                    <select name="" id="c_layout_select" style="width: 150px;">
+                        <option value="0">-</option>
+                        <option value="1">NUC 1</option>
+                        <option value="2">NUC 2</option>
+                        <option value="3">NUC 3</option>
+                        <option value="4">NUC 4</option>
+                    </select>
+                </div>
+                <div class="input_group">
+                    <label>Fecha de sinconización</label>
+                    <div class="group_items">
+                        <div class="input_box">
+                            <label for="start_date">Desde</label>
+                            <input type="date" name="" id="start_date">
+                        </div>
+                        <div class="input_box">
+                            <label for="end_date">Hasta</label>
+                            <input type="date" name="" id="end_date">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="c_layout_content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Grupo</th>
+                            <th>EPAD</th>
+                            <th>Canal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1234</td>
+                            <td>Recurso 1</td>
+                            <td>Grupo 1</td>
+                            <td>NUC 4567</td>
+                            <td>Yachakuy Secundaria</td>
+                        </tr>
+                        <tr>
+                            <td>1234</td>
+                            <td>Recurso 1</td>
+                            <td>Grupo 1</td>
+                            <td>NUC 4567</td>
+                            <td>Yachakuy Secundaria</td>
+                        </tr>
+                        <tr>
+                            <td>1234</td>
+                            <td>Recurso 1</td>
+                            <td>Grupo 1</td>
+                            <td>NUC 4567</td>
+                            <td>Yachakuy Secundaria</td>
+                        </tr>
+                        <tr>
+                            <td>1234</td>
+                            <td>Recurso 1</td>
+                            <td>Grupo 1</td>
+                            <td>NUC 4567</td>
+                            <td>Yachakuy Secundaria</td>
+                        </tr>
+                        <tr>
+                            <td>1234</td>
+                            <td>Recurso 1</td>
+                            <td>Grupo 1</td>
+                            <td>NUC 4567</td>
+                            <td>Yachakuy Secundaria</td>
+                        </tr>
+                        <tr>
+                            <td>1234</td>
+                            <td>Recurso 1</td>
+                            <td>Grupo 1</td>
+                            <td>NUC 4567</td>
+                            <td>Yachakuy Secundaria</td>
+                        </tr>
+                        <tr>
+                            <td>1234</td>
+                            <td>Recurso 1</td>
+                            <td>Grupo 1</td>
+                            <td>NUC 4567</td>
+                            <td>Yachakuy Secundaria</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-    <div id="c_view_reports_body">
-        <table style="border:1px solid black;">
-            <thead>
-                <tr>
-                    <th style="border:1px solid black;">Nombre</th>
-                    <th style="border:1px solid black;">Host</th>
-                    <th style="border:1px solid black;">IP</th>
-                    <th style="border:1px solid black;">OS</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each nodes}}
-                <tr>
-                    <td style="border:1px solid black;">{{name}}</td>
-                    <td style="border:1px solid black;">{{host}}</td>
-                    <td style="border:1px solid black;">{{ip}}</td>
-                    <td style="border:1px solid black;">{{osdesc}}</td>
-                </tr>
-                {{/each}}
-            </tbody>
-        </table>
-    </div>
-</div>

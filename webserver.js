@@ -6623,7 +6623,7 @@ module.exports.CreateWebServer = function (parent, db, args, certificates, doneF
                     const domain = getDomain(req);
                     const page = getRenderPage('custom_report_view',req,domain);
                     
-                    obj.db.file.find({type:{$in:['node','sysinfo']}},(err,docs)=>{
+                    return obj.db.file.find({type:{$in:['node','sysinfo','mesh']}},(err,docs)=>{
                         if(err){
                             return res.json({
                                 ok:false,
@@ -6632,16 +6632,26 @@ module.exports.CreateWebServer = function (parent, db, args, certificates, doneF
                             })
                         }
 
+                        let meshs = docs.filter(d=>d.type=='mesh');
                         let nodes = docs.filter(d=>d.type=='node');
                         let sysinfoDevices = docs.filter(d=>d.type=='sysinfo'); 
                         nodes.forEach(e=>{
                             const id = e._id.split('//')[1];
                             const sysinfo = sysinfoDevices.find(e=>e._id==`sinode//${id}`);
                             e['sysinfo'] = sysinfo;
-                        })
-                        render(req,res,page,{nodes},user);
-                    })           
-                }         
+                        });
+                        meshs.forEach(e=>{
+                            const id = e._id.split('//')[1];
+                            const mesh_nodes = nodes.map(node=>{
+                                if(node.meshid == `mesh//${id}`) return node;
+                                return null;
+                            }).filter(node=> node != null);
+                            e['nodes'] = mesh_nodes;
+                        });
+                        return render(req,res,page,{meshs},user);
+                    });   
+                }   
+                return res.status(301).redirect('/')     
             })
 
             //TODO ***** BERRY API *****
