@@ -6616,6 +6616,34 @@ module.exports.CreateWebServer = function (parent, db, args, certificates, doneF
                 }
             });
 
+            //? ### VISTA DE REPORTES ###
+            obj.app.get(url+'custom_report_view', async(req,res)=>{
+                if (req.session && req.session.userid && obj.users[req.session.userid]) {
+                    const user = obj.users[req.session.userid];
+                    const domain = getDomain(req);
+                    const page = getRenderPage('custom_report_view',req,domain);
+                    
+                    obj.db.file.find({type:{$in:['node','sysinfo']}},(err,docs)=>{
+                        if(err){
+                            return res.json({
+                                ok:false,
+                                message:'Ha ocurrido un error en la consulta',
+                                error:err
+                            })
+                        }
+
+                        let nodes = docs.filter(d=>d.type=='node');
+                        let sysinfoDevices = docs.filter(d=>d.type=='sysinfo'); 
+                        nodes.forEach(e=>{
+                            const id = e._id.split('//')[1];
+                            const sysinfo = sysinfoDevices.find(e=>e._id==`sinode//${id}`);
+                            e['sysinfo'] = sysinfo;
+                        })
+                        render(req,res,page,{nodes},user);
+                    })           
+                }         
+            })
+
             //TODO ***** BERRY API *****
 
             obj.app.get(url + 'terms', handleTermsRequest);

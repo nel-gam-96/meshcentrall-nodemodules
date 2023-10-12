@@ -180,6 +180,11 @@
             <div id="LeftMenuMyServer" tabindex="0" class="lbbutton" style="display:none" title="Mi Servidor" onclick="go(6,event)" onkeypress="if (event.key=='Enter') { go(6); }">
                 <div class="lbtg lb6"></div>
             </div>
+            <div id="custom_LeftMenuReports" tabindex="0" class="lbbutton" style="" title="Reportes" onclick="go(1000)" data-type="custom" data-view="reports">
+                <div class="lbtg">
+                    <img style="width: 100%;height: 100%;object-fit: cover;" src="/images/report-icon.png" alt="Reportes">
+                </div>
+            </div>
         </div>
         <div id="topbar" class="noselect">
             <div>
@@ -212,6 +217,7 @@
                             <td tabindex="0" id="MainMenuMyFiles" class="topbar_td style3x" onclick="go(5,event)" onkeypress="if (event.key == 'Enter') go(5)">Mis Archivos</td>
                             <td tabindex="0" id="MainMenuMyUsers" class="topbar_td style3x" onclick="go(4,event)" onkeypress="if (event.key == 'Enter') go(4)">Mis Usuarios</td>
                             <td tabindex="0" id="MainMenuMyServer" class="topbar_td style3x" onclick="go(6,event)" onkeypress="if (event.key == 'Enter') go(6)">Mi Servidor</td>
+                            <td tabindex="0" id="custom_MainMenuReports" class="topbar_td style3x" onclick="go(1000)" data-type="custom">Reportes</td>
                             <td class="topbar_td_end style3">&nbsp;</td>
                         </tr>
                     </tbody></table>
@@ -1426,7 +1432,7 @@
         <audio id="chimes"><source src="sounds/chimes.mp3" type="audio/mp3"></audio>
         <iframe style="display:none" name="fileDownloadFrame"></iframe>
     </div>
-    
+    <script src="custom_UI/custom_ui.js" type="module"></script>
     <script type="text/javascript">
         'use strict';
         var random = '{{{randomlength}}}' // Random length string for BREACH mitigation
@@ -17801,37 +17807,41 @@
                     if (currentUser != null) { urlviewmode = '?viewmode=' + xxcurrentView + '&gotouser=' + ((serverinfo.crossDomain)?currentUser._id:currentUser._id.split('/')[2]); }
                 } else if ((xxcurrentView >= 51) && (xxcurrentView <= 51)) { // User Group Link
                     if ((currentUserGroup != null) && (currentUserGroup._id != null)) { urlviewmode = '?viewmode=' + xxcurrentView + '&gotougrp=' + ((serverinfo.crossDomain)?currentUserGroup._id:currentUserGroup._id.split('/')[2]); }
-                } else if (xxcurrentView > 1) { urlviewmode = '?viewmode=' + xxcurrentView; }
+                } else if (xxcurrentView > 1 && xxcurrentView < 999) { urlviewmode = '?viewmode=' + xxcurrentView; }
+                
+                else if(xxcurrentView === 1000){ // CUSTOM REPORTS VIEW
+                    urlviewmode = '?customviewmode=reports';
+                }
                 for (var i in urlargs) { urlviewmode += (((urlviewmode == '')?'?':'&') + i + '=' + urlargs[i]); }
                 try { window.history.replaceState({}, document.title, window.location.pathname + urlviewmode); } catch (ex) { }
             }
 
             // Remove top bar selection
-            var mainBarItems = ['MainMenuMyDevices', 'MainMenuMyAccount', 'MainMenuMyEvents', 'MainMenuMyFiles', 'MainMenuMyUsers', 'MainMenuMyServer'];
+            var mainBarItems = ['MainMenuMyDevices', 'MainMenuMyAccount', 'MainMenuMyEvents', 'MainMenuMyFiles', 'MainMenuMyUsers', 'MainMenuMyServer', 'custom_MainMenuReports'];
             for (var i in mainBarItems) {
                 QC(mainBarItems[i]).remove('fullselect');
                 QC(mainBarItems[i]).remove('semiselect');
             }
 
             // Remove left bar selection
-            var leftBarItems = ['LeftMenuMyDevices', 'LeftMenuMyAccount', 'LeftMenuMyEvents', 'LeftMenuMyFiles', 'LeftMenuMyUsers', 'LeftMenuMyServer'];
+            var leftBarItems = ['LeftMenuMyDevices', 'LeftMenuMyAccount', 'LeftMenuMyEvents', 'LeftMenuMyFiles', 'LeftMenuMyUsers', 'LeftMenuMyServer', 'custom_LeftMenuReports'];
             for (var i in leftBarItems) {
                 QC(leftBarItems[i]).remove('lbbuttonsel');
                 QC(leftBarItems[i]).remove('lbbuttonsel2');
             }
 
             // Define class for Menu(s) as fully or semi active.
-            var mainMenuActiveClass = (x < 9 ? 'fullselect' : 'semiselect');
-            var leftMenuActiveClass = (((x < 9) || (x == 115) || (x == 40) || (x == 41) || (x == 42)) ? 'lbbuttonsel2' : 'lbbuttonsel');
+            var mainMenuActiveClass = ((x < 9 || x == 1000) ? 'fullselect' : 'semiselect');
+            var leftMenuActiveClass = (((x < 9) || (x == 115) || (x == 40) || (x == 41) || (x == 42) || (x == 1000)) ? 'lbbuttonsel2' : 'lbbuttonsel');
 
             var backView = 0;
             if (goBackStack.length > 0) { backView = goBackStack[goBackStack.length - 1]; }
 
             // My Devices
-            if (x == 1 || (backView == 1) || ((backView == 0) && (x >= 10 && x < 20))) {
+            if (x == 1 || ((backView == 0) && (x >= 10 && x < 20))) {
                 QC('MainMenuMyDevices').add(mainMenuActiveClass);
                 QC('LeftMenuMyDevices').add(leftMenuActiveClass);
-            } else if (x == 2 || (backView == 2) || ((backView == 0) && (x >= 20 && x < 30))) {
+            } else if (x == 2 || ((backView == 0) && (x >= 20 && x < 30))) {
                 // My Account
                 QC('MainMenuMyAccount').add(mainMenuActiveClass);
                 QC('LeftMenuMyAccount').add(leftMenuActiveClass);
@@ -17851,6 +17861,10 @@
                 // My Server
                 QC('MainMenuMyServer').add(mainMenuActiveClass);
                 QC('LeftMenuMyServer').add(leftMenuActiveClass);
+            } else if (x == 1000) {
+                // CUSTOM REPORTS VIEW
+                QC('custom_MainMenuReports').add(mainMenuActiveClass);
+                QC('custom_LeftMenuReports').add(leftMenuActiveClass);
             }
             QV('ServerPlugins', pluginHandler != null);
 
@@ -17862,7 +17876,7 @@
             if ((x == 0) && (webPageFullScreen)) { QC('body').add('arg_hide'); }
 
             QV('MainSubMenuSpan', (x >= 10) && (x < 20));
-            QV('UserDummyMenuSpan', (x == 51) || ((x < 10) && (x != 6) && webPageFullScreen));
+            QV('UserDummyMenuSpan', (x == 51) || (x == 1000) || ((x < 10) && (x != 6) && webPageFullScreen));
             QV('MeshSubMenuSpan', (x >= 20) && (x < 30));
             QV('UserSubMenuSpan', (x >= 30) && (x < 40));
             QV('ServerSubMenuSpan', x == 6 || x == 115 || x == 40 || x == 41 || x == 42 || x == 43);

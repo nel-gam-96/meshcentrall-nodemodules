@@ -1,0 +1,27 @@
+<div id="c_view_reports" style="display: none;" data-view="custom" data-mode="reports">
+    <div id="c_view_reports_title">
+        <h1>Reportes</h1>
+    </div>
+    <div id="c_view_reports_body">
+        <table style="border:1px solid black;">
+            <thead>
+                <tr>
+                    <th style="border:1px solid black;">Nombre</th>
+                    <th style="border:1px solid black;">Host</th>
+                    <th style="border:1px solid black;">IP</th>
+                    <th style="border:1px solid black;">OS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each nodes}}
+                <tr>
+                    <td style="border:1px solid black;">{{name}}</td>
+                    <td style="border:1px solid black;">{{host}}</td>
+                    <td style="border:1px solid black;">{{ip}}</td>
+                    <td style="border:1px solid black;">{{osdesc}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</div>
