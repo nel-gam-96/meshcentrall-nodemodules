@@ -1,45 +1,28 @@
-<div id="c_view_reports" data-view="custom" data-mode="reports" style="height: 100%;">
+<div id="c_view_reports" data-view="custom" data-mode="reports" style="height: 100%;display: none;">
         <div id="c_view_reports_title">
             <h1>Reportes</h1>
         </div>
         <div id="c_view_reports_layout" style="height: 100%;">
             <aside id="c_layout_aside">
+                <h3>Grupos</h3>
                 <div class="layout_items">
                     <div class="input_cheack_group">
-                        <input type="checkbox" name="" id="all_groups">
+                        <input type="checkbox" name="" id="main_all_check_input" value="ALL">
                         <label for="all_groups">TODOS</label>
                     </div>
-                    <div class="input_cheack_group">
-                        <input type="checkbox" name="" id="grupo1">
-                        <label for="grupo1">Grupo 1</label>
-                    </div>
-                    <div class="input_cheack_group">
-                        <input type="checkbox" name="" id="grupo2">
-                        <label for="grupo2">Grupo 2</label>
-                    </div>
-                    <div class="input_cheack_group">
-                        <input type="checkbox" name="" id="grupo3">
-                        <label for="grupo3">Grupo 3</label>
-                    </div>
-                    <div class="input_cheack_group">
-                        <input type="checkbox" name="" id="grupo4">
-                        <label for="grupo4">Grupo 4</label>
-                    </div>
-                    <div class="input_cheack_group">
-                        <input type="checkbox" name="" id="grupo5">
-                        <label for="grupo5">Grupo 5</label>
-                    </div>
+                    {{#each meshs}}
+                        <div class="input_cheack_group">
+                            <input value="{{_id}}" type="checkbox" name="mesh_input" id="{{ _id }}">
+                            <label for="{{ _id }}">{{ name }}</label>
+                        </div>
+                    {{/each}}
                 </div>
             </aside>
             <div id="c_layout_filters">
                 <div class="input_group">
                     <label for="c_layout_select">EPAD</label>
-                    <select name="" id="c_layout_select" style="width: 150px;">
+                    <select disabled name="" id="c_layout_select" style="width: 150px;">
                         <option value="0">-</option>
-                        <option value="1">NUC 1</option>
-                        <option value="2">NUC 2</option>
-                        <option value="3">NUC 3</option>
-                        <option value="4">NUC 4</option>
                     </select>
                 </div>
                 <div class="input_group">
@@ -57,7 +40,8 @@
                 </div>
             </div>
             <div id="c_layout_content">
-                <table>
+                <h3>Selecciones un grupos</h3>
+                {{!-- <table>
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -118,7 +102,7 @@
                             <td>Yachakuy Secundaria</td>
                         </tr>
                     </tbody>
-                </table>
+                </table> --}}
             </div>
         </div>
     </div>

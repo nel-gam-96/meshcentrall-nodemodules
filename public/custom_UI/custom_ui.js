@@ -16,18 +16,37 @@ const setCustomHandlers = () => {
     all_leftMeu_btns.forEach(btn=>btn.addEventListener('click',()=>handleCustomView(btn)));
 }
 
+const getAllInputsChecked = () => {
+    let input_checkeds_ids = [];
+    let total_input_chekeds = 0;
+    const mesh_inputs = document.querySelectorAll('#c_layout_aside input[name=mesh_input]');
+    const main_input_check_all = document.getElementById('main_all_check_input')
+    const mesh_inputs_num = mesh_inputs.length;
+    mesh_inputs.forEach(mi=>{
+        if(mi.checked){
+            input_checkeds_ids.push(mi);
+            total_input_chekeds+=1;
+        }
+    });
+
+    if(total_input_chekeds == mesh_inputs_num){
+        main_input_check_all.disabled = true;
+    }else{
+        main_input_check_all.disabled = false;
+    }
+
+    return input_checkeds_ids
+}
+
+const handleCheckBoxCheck = (check_element) => {
+    const groups_checked = getAllInputsChecked();
+    console.log(groups_checked)
+    //console.log(check_element.checked)
+}
+
 const addDinamicFunctions = () => {
-    //SELECT DEL GRUPO
-    const group_select = document.getElementById('c_layout_select');
-    group_select.addEventListener('change',(e)=>{
-        const {options} = e.target;
-        Object.values(options).forEach(opt=>{
-            if(opt.selected){
-                const id = opt.value;
-                console.log(id);
-            }
-        })
-    })
+    const mesh_inputs = document.querySelectorAll('#c_layout_aside input[name=mesh_input]');
+    mesh_inputs.forEach(mi=>mi.addEventListener('click',()=>handleCheckBoxCheck(mi)))
 }
 
 const addCustomReportView = async(container) => {

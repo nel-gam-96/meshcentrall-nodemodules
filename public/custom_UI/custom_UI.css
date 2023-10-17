@@ -5,10 +5,14 @@
     font-family: sans-serif;
 }
 
+#c_view_reports{
+    height: 100%;
+}
+
 #c_view_reports_layout{
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: auto;
+    grid-template-rows: 100px 1fr;
     justify-items: left;
     padding-top: 32px;
 }
@@ -50,12 +54,13 @@
     grid-column: 3 / 13;
     grid-row: 2 / 3;
     width: 100%;
-    padding: 16px;
+    padding: 32px;
 }
 
 #c_layout_aside .layout_items{
     display: flex;
     flex-direction: column;  
+    margin-top: 16px;
 }
 
 #c_layout_aside .layout_items .input_cheack_group:first-child{
@@ -72,6 +77,13 @@
     width: 100%;
     padding: 8px 0px;
     padding-left: 16px;
+}
+
+#c_layout_content h3{
+    font-size: 32px;
+    color: #7f7f7f;
+    font-weight: bold;
+    font-style: italic;
 }
 
 #c_layout_content table{
