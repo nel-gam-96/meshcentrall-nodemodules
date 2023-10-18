@@ -6369,6 +6369,10 @@ module.exports.CreateWebServer = function (parent, db, args, certificates, doneF
         }
 
         // Setup all HTTP handlers
+
+        obj.app.use(obj.express.json())
+        obj.app.use(obj.express.urlencoded({extended:true}))
+
         if (parent.pluginHandler != null) {
             parent.pluginHandler.callHook('hook_setupHttpHandlers', obj, parent);
         }
@@ -6397,7 +6401,11 @@ module.exports.CreateWebServer = function (parent, db, args, certificates, doneF
                         device_id:'makina',
                         password:'123456'
                     });
-                    res.json({data});
+                    res.json({
+                        ok:true,
+                        message:'Token auth',
+                        data
+                    });
                 } catch (error) {
                     console.log(error)
                     res.json({
@@ -6406,6 +6414,49 @@ module.exports.CreateWebServer = function (parent, db, args, certificates, doneF
                         error
                     })
                 }
+            });
+
+            obj.app.post(url + 'resourceList', async(req,res)=>{
+                if (req.session && req.session.userid && obj.users[req.session.userid]){
+                    try {
+                        if(('__token__' in req.body) == false){
+                            return res.status(301).redirect('/') 
+                        }
+                        const {data} = await obj.axios.post('http://192.168.1.160:5000/api/resource/list',{
+                            page: req.body.page,
+                            pagination: req.body.pagination,
+                            start_date: req.body.start_date,
+                            end_date: req.body.end_date
+                        },{
+                            headers: {
+                                'Authorization': `Bearer ${req.body.__token__}`,
+                                'Content-Type':'application/json'
+                            }
+                        });
+
+                        const user = obj.users[req.session.userid];
+                        const domain = getDomain(req);
+                        const page = getRenderPage('custom_table_reports_view',req,domain);             
+                        const resources = data.data;
+                        let total_pages = [];
+                        for (let index = 0; index < data.total_pages; index++) {
+                            const element = {
+                                page: (index+1),
+                                pagination:req.body.pagination
+                            }              
+                            total_pages.push(element);
+                        }          
+                        return render(req,res,page,{resources,total_pages,total_resources:data.total_resources},user);
+                    } catch (error) {
+                        console.log(error)
+                        res.json({
+                            ok:false,
+                            message:'Ha ocurrido un error en el servidor',
+                            error
+                        })
+                    }
+                }
+                return res.status(301).redirect('/')  
             });
 
             //** ### MAIN INFO ###
@@ -6449,7 +6500,11 @@ module.exports.CreateWebServer = function (parent, db, args, certificates, doneF
                             const id = e._id.split('//')[1];
                             const sysinfo = sysinfoDevices.find(e=>e._id==`sinode//${id}`);
                             e['sysinfo'] = sysinfo;
-                        })
+                        });
+                        if('meshid' in req.query){
+                            const meshid = req.query.meshid;
+                            nodes = nodes.filter(n=>n.meshid == meshid);
+                        }
                         return res.json({
                             ok:true,
                             message:'Lista de dispositivos',
@@ -6537,6 +6592,69 @@ module.exports.CreateWebServer = function (parent, db, args, certificates, doneF
                             });
                             e['nodes'] = mesh_nodes;
                         })
+
+                        if('mesh_ids' in req.body){
+                            let new_meshs = [];
+                            req.body.mesh_ids.forEach(me_id=>{
+                                meshs.forEach(mi=>{
+                                    if(mi._id == me_id){
+                                        new_meshs.push(mi)
+                                    }
+                                })
+                            })
+                            meshs = new_meshs;
+                        }
+
+                        return res.json({
+                            ok:true,
+                            message:'Lista de dispositivos',
+                            meshs
+                        })
+                    })
+                } catch (error) {
+                    console.log(error)
+                    return res.json({
+                        ok:false,
+                        message:'Ha ocurrido un error en el servidor',
+                        error
+                    })
+                }
+            });
+
+            //** ### GRUPOS ###
+            obj.app.post(url+'groups',(req,res)=>{
+                try {
+                    obj.db.file.find({type:{$in:['mesh','node']}},(err,docs)=>{
+                        if(err){
+                            return res.json({
+                                ok:false,
+                                message:'Ha ocurrido un error en la consulta',
+                                error:err
+                            })
+                        }
+                        let meshs = docs.filter(d=>d.type=='mesh');
+                        let nodes = docs.filter(d=>d.type=='node'); 
+                        meshs.forEach(e=>{
+                            const id = e._id.split('//')[1];
+                            let mesh_nodes = [];
+                            nodes.forEach(e=>{
+                                if(e.meshid==`mesh//${id}`){
+                                    mesh_nodes.push(e);
+                                }
+                            });
+                            e['nodes'] = mesh_nodes;
+                        })
+                        if('mesh_ids' in req.body){
+                            let new_meshs = [];
+                            req.body.mesh_ids.forEach(me_id=>{
+                                meshs.forEach(mi=>{
+                                    if(mi._id == me_id){
+                                        new_meshs.push(mi)
+                                    }
+                                })
+                            })
+                            meshs = new_meshs;
+                        }
                         return res.json({
                             ok:true,
                             message:'Lista de dispositivos',

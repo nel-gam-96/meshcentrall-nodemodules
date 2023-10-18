@@ -1,0 +1,33 @@
+<h3>Total de recursos: {{ total_resources }}</h3>
+<button id="download_csv_btn">Descargar reporte</button>
+<div id="c_list_resources_table">
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha de sincronización</th>
+                <th>Canal</th>
+                <th>Título</th>
+                <th>Grupo</th>
+                <th>EPAD</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each resources}}
+                <tr>
+                    <td>{{ updated }}</td>
+                    <td>{{ channel_name }}</td>
+                    <td>{{ content_contentnode_title }}</td>
+                    <td> GRUPO </td>
+                    <td> EPAD </td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+<div class="c_pagination_reports_table">
+    <a href="#">&laquo;</a>
+        {{#each total_pages}}
+            <a href="#" data-pagination="{{ pagination }}">{{ page }}</a>
+        {{/each}}
+    <a href="#">&raquo;</a>
+</div>

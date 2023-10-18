@@ -8,7 +8,7 @@
                 <div class="layout_items">
                     <div class="input_cheack_group">
                         <input type="checkbox" name="" id="main_all_check_input" value="ALL">
-                        <label for="all_groups">TODOS</label>
+                        <label for="main_all_check_input">TODOS</label>
                     </div>
                     {{#each meshs}}
                         <div class="input_cheack_group">
@@ -18,11 +18,11 @@
                     {{/each}}
                 </div>
             </aside>
-            <div id="c_layout_filters">
+            <form id="c_layout_filters">
                 <div class="input_group">
                     <label for="c_layout_select">EPAD</label>
-                    <select disabled name="" id="c_layout_select" style="width: 150px;">
-                        <option value="0">-</option>
+                    <select required disabled name="c_layout_select" id="c_layout_select" style="width: 150px;">
+                        <option>-</option>
                     </select>
                 </div>
                 <div class="input_group">
@@ -30,79 +30,21 @@
                     <div class="group_items">
                         <div class="input_box">
                             <label for="start_date">Desde</label>
-                            <input type="date" name="" id="start_date">
+                            <input required type="date" name="start_date" id="start_date">
                         </div>
                         <div class="input_box">
                             <label for="end_date">Hasta</label>
-                            <input type="date" name="" id="end_date">
+                            <input required type="date" name="end_date" id="end_date">
                         </div>
                     </div>
                 </div>
-            </div>
+                <div class="input_group">
+                    <label></label>
+                    <input style="cursor: pointer;" type="submit" value="Buscar" id="search_devices">
+                </div>
+            </form>
             <div id="c_layout_content">
-                <h3>Selecciones un grupos</h3>
-                {{!-- <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Título</th>
-                            <th>Grupo</th>
-                            <th>EPAD</th>
-                            <th>Canal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1234</td>
-                            <td>Recurso 1</td>
-                            <td>Grupo 1</td>
-                            <td>NUC 4567</td>
-                            <td>Yachakuy Secundaria</td>
-                        </tr>
-                        <tr>
-                            <td>1234</td>
-                            <td>Recurso 1</td>
-                            <td>Grupo 1</td>
-                            <td>NUC 4567</td>
-                            <td>Yachakuy Secundaria</td>
-                        </tr>
-                        <tr>
-                            <td>1234</td>
-                            <td>Recurso 1</td>
-                            <td>Grupo 1</td>
-                            <td>NUC 4567</td>
-                            <td>Yachakuy Secundaria</td>
-                        </tr>
-                        <tr>
-                            <td>1234</td>
-                            <td>Recurso 1</td>
-                            <td>Grupo 1</td>
-                            <td>NUC 4567</td>
-                            <td>Yachakuy Secundaria</td>
-                        </tr>
-                        <tr>
-                            <td>1234</td>
-                            <td>Recurso 1</td>
-                            <td>Grupo 1</td>
-                            <td>NUC 4567</td>
-                            <td>Yachakuy Secundaria</td>
-                        </tr>
-                        <tr>
-                            <td>1234</td>
-                            <td>Recurso 1</td>
-                            <td>Grupo 1</td>
-                            <td>NUC 4567</td>
-                            <td>Yachakuy Secundaria</td>
-                        </tr>
-                        <tr>
-                            <td>1234</td>
-                            <td>Recurso 1</td>
-                            <td>Grupo 1</td>
-                            <td>NUC 4567</td>
-                            <td>Yachakuy Secundaria</td>
-                        </tr>
-                    </tbody>
-                </table> --}}
+                <h3>Seleccione un grupo</h3>
             </div>
         </div>
     </div>

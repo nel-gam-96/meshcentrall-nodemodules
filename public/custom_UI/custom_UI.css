@@ -33,7 +33,7 @@
     padding: 16px;
     display: flex;
     justify-content: flex-start;
-    align-items: start;
+    align-items: end;
     gap: 16px;
 }
 
@@ -147,4 +147,55 @@
     border-color: #86b7fe;
     outline: 0;
     box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 25%);
+}
+
+#c_view_reports_layout #c_layout_filters input[type=submit]{
+    background-color: #196ab0;
+    color: #FFFFFF;
+    transition: all;
+    transition-duration: .3s;
+}
+
+#c_view_reports_layout #c_layout_filters input[type=submit]:hover{
+    background-color: #2c81cc;
+    color: #FFFFFF;
+}
+
+#c_list_resources_table{
+    max-height: 60vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+/****** PAGINATION ********/
+.c_pagination_reports_table {
+    display: inline-block;
+}
+  
+.c_pagination_reports_table a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+  
+.c_pagination_reports_table a.active {
+    background-color: #4CAF50;
+    color: white;
+}
+.c_pagination_reports_table a:hover:not(.active) {background-color: #ddd;}
+
+#download_csv_btn{
+    background-color: #287233;
+    color: #FFFFFF;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all;
+    transition-duration: .3s;
+}
+
+#download_csv_btn:hover{
+    background-color: #3a9e49;
 }
