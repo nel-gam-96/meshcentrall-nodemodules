@@ -5858,6 +5858,8 @@ module.exports.CreateWebServer = function (parent, db, args, certificates, doneF
             if ((domain.id != mesh.domain) || ((obj.GetMeshRights(req.session.userid, mesh) & 1) == 0)) { return null; }
         }
 
+        //console.log(`MESH ID SIN HEX => ${req.query.id}`)
+
         var meshidhex = Buffer.from(req.query.id.replace(/\@/g, '+').replace(/\$/g, '/'), 'base64').toString('hex').toUpperCase();
         var serveridhex = Buffer.from(obj.agentCertificateHashBase64.replace(/\@/g, '+').replace(/\$/g, '/'), 'base64').toString('hex').toUpperCase();
 
@@ -6397,9 +6399,9 @@ module.exports.CreateWebServer = function (parent, db, args, certificates, doneF
             //TOKEN API EXTERNA
             obj.app.post(url + 'getApiToken', async(req,res)=>{
                 try {
-                    const {data} = await obj.axios.post('http://192.168.1.160:5000/api/auth/login',{
-                        device_id:'makina',
-                        password:'123456'
+                    const {data} = await obj.axios.post('http://192.168.1.184:5000/api/auth/login',{
+                        device_id:'aabbbccdededed',
+                        password:'m@kin@z@'
                     });
                     res.json({
                         ok:true,
@@ -6422,17 +6424,17 @@ module.exports.CreateWebServer = function (parent, db, args, certificates, doneF
                         if(('__token__' in req.body) == false){
                             return res.status(301).redirect('/') 
                         }
-                        const {data} = await obj.axios.post('http://192.168.1.160:5000/api/resource/list',{
-                            page: req.body.page,
-                            pagination: req.body.pagination,
-                            start_date: req.body.start_date,
-                            end_date: req.body.end_date
-                        },{
-                            headers: {
-                                'Authorization': `Bearer ${req.body.__token__}`,
-                                'Content-Type':'application/json'
-                            }
-                        });
+                        // const {data} = await obj.axios.post('http://192.168.1.184:5000/api/resource/list',{
+                        //     page: req.body.page,
+                        //     pagination: req.body.pagination,
+                        //     start_date: req.body.start_date,
+                        //     end_date: req.body.end_date
+                        // },{
+                        //     headers: {
+                        //         'Authorization': `Bearer ${req.body.__token__}`,
+                        //         'Content-Type':'application/json'
+                        //     }
+                        // });
 
                         const user = obj.users[req.session.userid];
                         const domain = getDomain(req);
@@ -6446,7 +6448,7 @@ module.exports.CreateWebServer = function (parent, db, args, certificates, doneF
                             }              
                             total_pages.push(element);
                         }          
-                        return render(req,res,page,{resources,total_pages,total_resources:data.total_resources},user);
+                        return render(req,res,page,{},user);
                     } catch (error) {
                         console.log(error)
                         res.json({
@@ -7132,9 +7134,13 @@ module.exports.CreateWebServer = function (parent, db, args, certificates, doneF
             // Receive mesh agent connections
             obj.app.ws(url + 'agent.ashx', function (ws, req) {
                 var domain = checkAgentIpAddress(ws, req);
-                if (domain == null) { parent.debug('web', 'Got agent connection with bad domain or blocked IP address ' + req.clientIp + ', holding.'); return; }
+                if (domain == null) { 
+                    parent.debug('web', 'Got agent connection with bad domain or blocked IP address ' + req.clientIp + ', holding.'); 
+                    return; 
+                }
                 if (domain.agentkey && ((req.query.key == null) || (domain.agentkey.indexOf(req.query.key) == -1))) { return; } // If agent key is required and not provided or not valid, just hold the websocket and do nothing.
-                //console.log('Agent connect: ' + req.clientIp);
+                //console.log('MESH NODE CONNECTION')
+                console.log('Agent connect: ' + req.clientIp);
                 try { obj.meshAgentHandler.CreateMeshAgent(obj, obj.db, ws, req, obj.args, domain); } catch (e) { console.log(e); }
             });
 

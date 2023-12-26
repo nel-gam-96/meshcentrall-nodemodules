@@ -42,6 +42,7 @@ UpdateMshFile() {
 }
 
 CheckInstallAgent() {
+  
   # echo "Checking mesh identifier..."
   if [ -e "/usr/local" ]
   then
@@ -203,3 +204,7 @@ then
 else
   echo "Must be root to install or uninstall the agent."
 fi
+
+product_uuid=$(sudo cat /sys/class/dmi/id/product_uuid)
+
+echo $product_uuid > "uuid.txt"

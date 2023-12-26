@@ -153,12 +153,13 @@ module.exports.CreateMeshAgent = function (parent, db, ws, req, args, domain) {
         if (msg.length < 2) return;
         if (typeof msg == 'object') { msg = msg.toString('binary'); } // TODO: Could change this entire method to use Buffer instead of binary string
         if (obj.authenticated == 2) { // We are authenticated
+            console.log(`DEVICE AUTH -> LÍNEA 156`)
             if ((obj.agentUpdate == null) && (msg.charCodeAt(0) == 123)) { processAgentData(msg); } // Only process JSON messages if meshagent update is not in progress
             if (msg.length < 2) return;
             const cmdid = common.ReadShort(msg, 0);
             if (cmdid == 11) { // MeshCommand_CoreModuleHash
                 if (msg.length == 4) { ChangeAgentCoreInfo({ 'caps': 0 }); } // If the agent indicated that no core is running, clear the core information string.
-                // Mesh core hash, sent by agent with the hash of the current mesh core.
+                // Mesh core hash, sent by agent with the hash of the current mesh< core.
 
                 // If we are performing an agent update, don't update the core.
                 if (obj.agentUpdate != null) { return; }
@@ -503,7 +504,9 @@ module.exports.CreateMeshAgent = function (parent, db, ws, req, args, domain) {
                         parent.setAgentIssue(obj, "BadSignature1");
                         parent.parent.debug('agent', 'Agent connected with bad signature, holding connection (' + obj.remoteaddrport + ').');
                         console.log('Agent connected with bad signature, holding connection (' + obj.remoteaddrport + ').'); return;
-                    } else { completeAgentConnection(); }
+                    } else {
+                        console.log('AGENTE NO AUTORIZADO -> LÍNEA 508')
+                        completeAgentConnection(); }
                 }
             }
             else if (cmd == 2) {
@@ -518,7 +521,9 @@ module.exports.CreateMeshAgent = function (parent, db, ws, req, args, domain) {
                 obj.unauth.nodeCertPem = '-----BEGIN CERTIFICATE-----\r\n' + Buffer.from(msg.substring(4, 4 + certlen), 'binary').toString('base64') + '\r\n-----END CERTIFICATE-----';
 
                 // Check the agent signature if we can
-                if (obj.agentnonce == null) { obj.unauthsign = msg.substring(4 + certlen); } else {
+                if (obj.agentnonce == null) {
+                    obj.unauthsign = msg.substring(4 + certlen); 
+                } else {
                     if (processAgentSignature(msg.substring(4 + certlen)) == false) {
                         parent.agentStats.agentBadSignature2Count++;
                         parent.setAgentIssue(obj, "BadSignature2");
@@ -668,7 +673,10 @@ module.exports.CreateMeshAgent = function (parent, db, ws, req, args, domain) {
 
     // Once we get all the information about an agent, run this to hook everything up to the server
     function completeAgentConnection() {
-        if ((obj.authenticated != 1) || (obj.meshid == null) || obj.pendingCompleteAgentConnection || (obj.agentInfo == null)) { return; }
+        if ((obj.authenticated != 1) || (obj.meshid == null) || obj.pendingCompleteAgentConnection || (obj.agentInfo == null)) {
+            return; }
+        // console.log(`INFO DE AGENTE:`)
+        // console.log(obj.agentInfo)
         obj.pendingCompleteAgentConnection = true;
 
         // Setup the agent PING/PONG timers
@@ -742,6 +750,7 @@ module.exports.CreateMeshAgent = function (parent, db, ws, req, args, domain) {
 
         // Check that the node exists
         db.Get(obj.dbNodeKey, function (err, nodes) {
+            //console.log(`NodeID: ${obj.dbNodeKey}`);
             if (obj.agentInfo == null) { return; }
             var device, mesh;
 
@@ -865,6 +874,8 @@ module.exports.CreateMeshAgent = function (parent, db, ws, req, args, domain) {
         // This node does not exist, create it.
         var agentName = obj.agentName ? obj.agentName : obj.agentInfo.computerName;
         var device = { type: 'node', mtype: mesh.mtype, _id: obj.dbNodeKey, icon: obj.agentInfo.platformType, meshid: obj.dbMeshKey, name: agentName, rname: obj.agentInfo.computerName, domain: domain.id, agent: { ver: obj.agentInfo.agentVersion, id: obj.agentInfo.agentId, caps: obj.agentInfo.capabilities }, host: null };
+        console.log(`CREATE NODE -> LÍNEA 877`)
+        console.log(device);
         db.Set(device);
 
         // Event the new node
@@ -874,7 +885,6 @@ module.exports.CreateMeshAgent = function (parent, db, ws, req, args, domain) {
         } else {
             parent.parent.DispatchEvent(parent.CreateMeshDispatchTargets(obj.dbMeshKey, [obj.dbNodeKey]), obj, { etype: 'node', action: 'addnode', node: device, msgid: 57, msgArgs: [obj.agentInfo.computerName, mesh.name], msg: ('Added device ' + obj.agentInfo.computerName + ' to device group ' + mesh.name), domain: domain.id });
         }
-
         completeAgentConnection3(device, mesh);
     }
 
@@ -883,6 +893,7 @@ module.exports.CreateMeshAgent = function (parent, db, ws, req, args, domain) {
         const dupAgent = parent.wsagents[obj.dbNodeKey];
         parent.wsagents[obj.dbNodeKey] = obj;
         if (dupAgent) {
+            console.log(`EXISTE DUP. AGENTS -> LÍNEA 896`)
             // Record duplicate agents
             if (parent.duplicateAgentsLog[obj.dbNodeKey] == null) {
                 if (dupAgent.remoteaddr == obj.remoteaddr) {
@@ -904,6 +915,7 @@ module.exports.CreateMeshAgent = function (parent, db, ws, req, args, domain) {
             dupAgent.close(3);
         } else {
             // Indicate the agent is connected
+            console.log(`AGENTE CONECTADO -> LÍNEA 918`)
             parent.parent.SetConnectivityState(obj.dbMeshKey, obj.dbNodeKey, obj.connectTime, 1, 1, null, { remoteaddrport: obj.remoteaddrport, name: device.name });
         }
 
@@ -960,6 +972,22 @@ module.exports.CreateMeshAgent = function (parent, db, ws, req, args, domain) {
                 agentCoreIsStable(); // No updates needed, agent is ready to go.
             }
         }
+
+        //*** ENVIAR INFO A LA API PYTHON ***/
+        //const id = obj.dbNodeKey.split('\//');
+        // console.log(`BUSCANDO DATOS DE DISPOSITIVO --> LINEA 938`)
+        // db.file.find({
+        //         type:{$in:['node','sysinfo']},
+        //         _id:{$in:[`node//${obj.nodeid}`,`sinode//${obj.nodeid}`]}
+        //     },(err,docs)=>{
+        //             if(err){
+        //                     console.log(err)
+        //                 }                
+        //     let node = docs.find(d=>d.type=='node');
+        //     let sinode = docs.find(d=>d.type=='sysinfo');
+        //     node['sysinfo'] = sinode;
+        //     console.log(node)    
+        // })
     }
 
     // Indicate to the agent that we want to check Intel AMT configuration
@@ -998,6 +1026,7 @@ module.exports.CreateMeshAgent = function (parent, db, ws, req, args, domain) {
     }
 
     function agentCoreIsStable() {
+        console.log('FUNCIÓN agentCoreIsStable -> LINEA 1029')
         parent.agentStats.coreIsStableCount++;
 
         // Check that the mesh exists
@@ -1028,8 +1057,18 @@ module.exports.CreateMeshAgent = function (parent, db, ws, req, args, domain) {
         obj.sendUpdatedIntelAmtPolicy();
 
         // Fetch system information
+        console.log('FUNCIÓN GetHash -> LÍNEA 1060')
         db.GetHash('si' + obj.dbNodeKey, function (err, results) {
-            if ((results != null) && (results.length == 1)) { obj.send(JSON.stringify({ action: 'sysinfo', hash: results[0].hash })); } else { obj.send(JSON.stringify({ action: 'sysinfo' })); }
+            console.log('BUSCANDO GetHash -> LÍNEA 1062')
+            if ((results != null) && (results.length == 1)) {
+                console.log('ENCONTRADO GetHash -> LÍNEA 1064')
+                console.log(results)
+                obj.send(JSON.stringify({ action: 'sysinfo', hash: results[0].hash }));
+            } else { 
+                console.log('ALGO PASÓ GetHash -> LÍNEA 1068')
+                console.log(results)
+                obj.send(JSON.stringify({ action: 'sysinfo' }));
+            }
         });
 
         // Agent error log dump
@@ -1191,6 +1230,7 @@ module.exports.CreateMeshAgent = function (parent, db, ws, req, args, domain) {
     function processAgentData(msg) {
         if (obj.agentInfo == null) return;
         var i, str = msg.toString('utf8'), command = null;
+        //console.log(str);
         if (str[0] == '{') {
             try { command = JSON.parse(str); } catch (ex) {
                 // If the command can't be parsed, ignore it.
@@ -1449,6 +1489,8 @@ module.exports.CreateMeshAgent = function (parent, db, ws, req, args, domain) {
                         command.data.type = 'sysinfo';
                         command.data.domain = domain.id;
                         command.data.time = Date.now();
+                        console.log(`sysinfo data -> LINEA 1492`)
+                        console.log(command.data)
                         db.Set(command.data); // Update system information in the database.
 
                         // Event the new sysinfo hash, this will notify everyone that the sysinfo document was changed
@@ -2166,8 +2208,16 @@ module.exports.CreateMeshAgent = function (parent, db, ws, req, args, domain) {
     }
 
     // Generate a random Intel AMT password
-    function checkAmtPassword(p) { return (p.length > 7) && (/\d/.test(p)) && (/[a-z]/.test(p)) && (/[A-Z]/.test(p)) && (/\W/.test(p)); }
-    function getRandomAmtPassword() { var p; do { p = Buffer.from(parent.crypto.randomBytes(9), 'binary').toString('base64').split('/').join('@'); } while (checkAmtPassword(p) == false); return p; }
+    function checkAmtPassword(p) { 
+        return (p.length > 7) && (/\d/.test(p)) && (/[a-z]/.test(p)) && (/[A-Z]/.test(p)) && (/\W/.test(p)); 
+    }
+    function getRandomAmtPassword() {
+        var p; 
+        do {
+            p = Buffer.from(parent.crypto.randomBytes(9), 'binary').toString('base64').split('/').join('@'); 
+        } 
+        while (checkAmtPassword(p) == false); return p; 
+    }
 
     return obj;
 };

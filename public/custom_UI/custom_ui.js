@@ -124,9 +124,8 @@ const getApiToken = async () => {
 }
 
 const handleSubmit = async (formElement) => {
-    return
-    const token = await getApiToken();
-    if(!token) return window.alert('Error al obtener token de API');
+    // const token = await getApiToken();
+    // if(!token) return window.alert('Error al obtener token de API');
     const form = new FormData(formElement);
     //const node = form.get('c_layout_select');
     const start_date = form.get('start_date');
@@ -160,6 +159,6 @@ const main = async() => {
         e.preventDefault();
         handleSubmit(search_devices_form);
     });
-    await getApiToken();
+    //await getApiToken();
 }
 window.addEventListener('DOMContentLoaded',main)

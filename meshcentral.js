@@ -2927,6 +2927,7 @@ function CreateMeshCentralServer(config, args) {
     obj.updateMeshAgentInstallScripts = function () {
         for (var scriptid in meshAgentsInstallScriptList) {
             var scriptpath = obj.path.join(__dirname, 'agents', meshAgentsInstallScriptList[scriptid].localname);
+            //console.log("scriptpath : ",scriptpath);
             var stream = null;
             try {
                 stream = obj.fs.createReadStream(scriptpath);
