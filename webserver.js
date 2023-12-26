@@ -6460,6 +6460,90 @@ module.exports.CreateWebServer = function (parent, db, args, certificates, doneF
                 }
                 return res.status(301).redirect('/')  
             });
+            obj.app.get(url + 'validateInformationAgent',async(req,res)=>{
+                if(!('name' in req.query)){
+                    return res.json({
+                        ok:false,
+                        message:'Debe proporcionar un nombre',
+                    })
+                }
+                if(!('meshid' in req.query)){
+                    return res.json({
+                        ok:false,
+                        message:'Debe elegir un grupo',
+                    })
+                }
+                if(!('uuid' in req.query)){
+                    return res.json({
+                        ok:false,
+                        message:'Debe enviar el uuid del equipo',
+                    })
+                }
+                try {
+                    obj.db.file.find({
+                        type:{$in:['node']},
+                        name:{$in:[`${req.query['name']}`]},
+                        meshid:{$in:[`mesh//${req.query['meshid']}`]}
+                    },(err,docs)=>{
+                        if(err){
+                            return res.json({
+                                ok:false,
+                                message:'Ha ocurrido un error en la consulta',
+                                error:err
+                            })
+                        }
+                        if(docs.length == 0){
+                           return obj.db.file.find({
+                                type:{$in:['sysinfo']}
+                            },(err,docs2)=>{
+                                if(err){
+                                    return res.json({
+                                        ok:false,
+                                        message:'Ha ocurrido un error en la consulta',
+                                        error:err
+                                    })
+                                }
+                                let exist = false;
+                                for (const d of docs2) {
+                                  if('hardware' in d){
+                                        if('identifiers' in d.hardware){
+                                            const uuid = d.hardware.identifiers.product_uuid;
+                                            if(uuid == req.query['uuid']){
+                                                exist = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }   
+                                if(exist){
+                                    return res.json({
+                                        ok:false,
+                                        message:'El UUID ya fue registrado anteriormente'
+                                    })
+                                }  
+                                return res.json({
+                                    ok:true,
+                                    message:'El nombre está disposible'
+                                }) 
+                            });
+                            
+                        }
+
+                        return res.json({
+                            ok:false,
+                            message:'El nombre ya está en uso'
+                        })
+            
+                    })
+                } catch (error) {
+                    console.log(error)
+                    return res.json({
+                        ok:false,
+                        message:'Ha ocurrido un error en el servidor',
+                        error
+                    })
+                }
+            })
 
             //** ### MAIN INFO ###
             obj.app.get(url+'main-info',(req,res)=>{
